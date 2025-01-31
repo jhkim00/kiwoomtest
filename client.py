@@ -8,6 +8,10 @@ sio = socketio.AsyncClient()
 async def on_message(data):
     print("Received from server:", data)
 
+@sio.on("login_event")
+async def on_login():
+    print("login_event")
+
 async def main():
     await sio.connect("http://localhost:5000")
     print("Connected:", sio.sid)
