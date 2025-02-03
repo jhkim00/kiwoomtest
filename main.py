@@ -1,10 +1,18 @@
 import sys
 import logging
 
+from PyQt5.QtCore import QUrl, QObject, pyqtSlot
 from PyQt5.QtWidgets import *
+from PyQt5.QtQml import QQmlApplicationEngine
+
 from model import Server, Manager
+from viewmodel import MainViewModel
 
 logger = logging.getLogger()
+
+def _handleQmlWarnings(warnings):
+    for warning in warnings:
+        print("QML Warning:", warning.toString())
 
 if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
@@ -22,5 +30,18 @@ if __name__ == "__main__":
 
     manager = Manager.getInstance()
     server.commConnect.connect(manager.commConnect)
+
+    """ 
+    client code
+    """
+    engine = QQmlApplicationEngine()
+    engine.warnings.connect(_handleQmlWarnings)
+
+    mainViewModel = MainViewModel(engine.rootContext(), app)
+
+    engine.load(QUrl.fromLocalFile("qml/Main.qml"))
+
+    if not engine.rootObjects():
+        sys.exit(-1)
 
     sys.exit(app.exec_())
