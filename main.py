@@ -2,7 +2,7 @@ import sys
 import logging
 
 from PyQt5.QtWidgets import *
-from model import Server
+from model import Server, Manager
 
 logger = logging.getLogger()
 
@@ -15,7 +15,12 @@ if __name__ == "__main__":
     streamHandler.setFormatter(formatter)
     logger.addHandler(streamHandler)
 
+    server = Server.getInstance()
+    server.start()
+
     app = QApplication(sys.argv)
 
-    server = Server()
-    server.start()
+    manager = Manager.getInstance()
+    server.commConnect.connect(manager.commConnect)
+
+    sys.exit(app.exec_())

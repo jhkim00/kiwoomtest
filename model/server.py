@@ -1,24 +1,21 @@
-import eventlet
-eventlet.monkey_patch()  # 반드시 최상단에 위치해야 함
-
 import sys
 import logging
 
 from flask import Flask
 from flask_socketio import SocketIO
 
-from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
-
-from .kiwoom import Kiwoom
+from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, QThread
 
 logger = logging.getLogger()
 
-class Server(QObject):
+class Server(QThread):
+    instance = None
+
     def __init__(self):
         super().__init__()
         logger.debug("")
         self.app = Flask(__name__)
-        self.socketio = SocketIO(self.app, async_mode="eventlet", cors_allowed_origins="*")
+        self.socketio = SocketIO(self.app, async_mode="threading")
 
         # 라우트 등록
         self.app.route("/")(self.index)
@@ -29,8 +26,13 @@ class Server(QObject):
         self.socketio.on_event("message", self.handle_message)
         self.socketio.on_event("login", self.handle_login)
 
-        self.kw = Kiwoom.getInstance()
-        self.kw.loginCompleted.connect(self.onLoginCompleted)
+    commConnect = pyqtSignal()
+
+    @classmethod
+    def getInstance(cls):
+        if cls.instance is None:
+            cls.instance = Server()
+        return cls.instance
 
     @classmethod
     def index(cls):
@@ -50,12 +52,11 @@ class Server(QObject):
 
     def handle_login(self):
         logger.debug("")
-        self.kw.CommConnect()
+        self.commConnect.emit()
 
-    def start(self):
-        # Flask-SocketIO 실행 (eventlet 사용)
-        self.socketio.run(self.app, host="0.0.0.0", port=5000, debug=True, allow_unsafe_werkzeug=True)
+    def run(self):
+        self.socketio.run(self.app, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)
 
-    def onLoginCompleted(self):
+    def notifyLoginCompleted(self):
         logger.debug("")
         self.socketio.emit("login_event")
