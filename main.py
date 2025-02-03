@@ -1,6 +1,7 @@
 import sys
 import logging
 import asyncio
+import time
 
 from PyQt5.QtCore import QUrl, QObject, pyqtSlot
 from PyQt5.QtWidgets import *
@@ -36,11 +37,14 @@ if __name__ == "__main__":
     manager = Manager.getInstance()
     server.commConnect.connect(manager.commConnect)
 
-    client = Client.getInstance()
-    client.connect_to_server.emit()
-
     """ 
     client code
+    """
+    client = Client.getInstance()
+    client.connect_to_server()
+
+    """
+    GUI start
     """
     engine = QQmlApplicationEngine()
     engine.warnings.connect(_handleQmlWarnings)

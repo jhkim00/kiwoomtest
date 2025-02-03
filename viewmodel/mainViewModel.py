@@ -6,27 +6,32 @@ from client import Client
 logger = logging.getLogger()
 
 class MainViewModel(QObject):
+    login_completedChanged = pyqtSignal()
+
     def __init__(self, qmlContext, parent=None):
         super().__init__(parent)
         self.qmlContext = qmlContext
         self.qmlContext.setContextProperty('mainViewModel', self)
 
-        self._connected = False
+        self._login_completed = False
 
-    connectedChanged = pyqtSignal()
+    @pyqtProperty(bool, notify=login_completedChanged)
+    def login_completed(self):
+        return self._login_completed
 
-    @pyqtProperty(bool, notify=connectedChanged)
-    def connected(self):
-        return self._connected
-
-    @connected.setter
-    def connected(self, val):
-        if self._connected != val:
-            self._connected = val
-            self.connectedChanged.emit()
+    @login_completed.setter
+    def login_completed(self, val):
+        if self._login_completed != val:
+            self._login_completed = val
+            self.login_completedChanged.emit()
 
     @pyqtSlot()
     def login(self):
         logger.debug("")
-        Client.getInstance().login()
+        Client.getInstance().login(self.on_login_result)
+
+    @pyqtSlot()
+    def on_login_result(self):
+        logger.debug("")
+        self.login_completed = True
 
