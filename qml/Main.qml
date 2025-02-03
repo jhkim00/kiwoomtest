@@ -40,6 +40,7 @@ ApplicationWindow {
             enabled: mainViewModel.login_completed
             onBtnClicked: {
                 console.log('btnOpenAccountInfo clicked')
+                mainViewModel.login_info()
             }
         }
 
@@ -55,6 +56,7 @@ ApplicationWindow {
             enabled: mainViewModel.login_completed
             onBtnClicked: {
                 console.log('btnOpenCurrentPrice clicked')
+                mainViewModel.account_info()
             }
         }
     }

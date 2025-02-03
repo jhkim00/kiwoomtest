@@ -35,7 +35,6 @@ if __name__ == "__main__":
     asyncio.set_event_loop(loop)
 
     manager = Manager.getInstance()
-    server.commConnect.connect(manager.commConnect)
 
     """ 
     client code
