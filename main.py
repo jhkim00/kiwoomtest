@@ -1,11 +1,14 @@
 import sys
 import logging
+import asyncio
 
 from PyQt5.QtCore import QUrl, QObject, pyqtSlot
 from PyQt5.QtWidgets import *
 from PyQt5.QtQml import QQmlApplicationEngine
+from qasync import QEventLoop, asyncSlot
 
 from model import Server, Manager
+from client import Client
 from viewmodel import MainViewModel
 
 logger = logging.getLogger()
@@ -27,9 +30,14 @@ if __name__ == "__main__":
     server.start()
 
     app = QApplication(sys.argv)
+    loop = QEventLoop(app)
+    asyncio.set_event_loop(loop)
 
     manager = Manager.getInstance()
     server.commConnect.connect(manager.commConnect)
+
+    client = Client.getInstance()
+    client.connect_to_server.emit()
 
     """ 
     client code
@@ -44,4 +52,5 @@ if __name__ == "__main__":
     if not engine.rootObjects():
         sys.exit(-1)
 
-    sys.exit(app.exec_())
+    with loop:
+        loop.run_forever()
