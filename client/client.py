@@ -11,12 +11,18 @@ logger = logging.getLogger()
 
 class Client(QObject):
     instance = None
+    """
+    signals for async call
+    """
     connect_to_server_signal = pyqtSignal()
     login_signal = pyqtSignal()
     login_info_signal = pyqtSignal()
     account_info_signal = pyqtSignal(dict)
 
-    login_completed = pyqtSignal()
+    """
+    signals for event callback
+    """
+    login_result = pyqtSignal()
     login_info_result = pyqtSignal(list)
     account_info_result = pyqtSignal(dict)
 
@@ -26,10 +32,20 @@ class Client(QObject):
 
         self.sio = socketio.AsyncClient()
 
+        """
+        connect signals for async call
+        """
         self.connect_to_server_signal.connect(self.connect_async)
         self.login_signal.connect(self.login_async)
         self.login_info_signal.connect(self.login_info_async)
         self.account_info_signal.connect(self.account_info_async)
+
+        """
+        slots for callback
+        """
+        self._login_result_slot = None
+        self._login_info_result_slot = None
+        self._account_info_result_slot = None
 
         @self.sio.on("message")
         async def on_message(data):
@@ -38,7 +54,7 @@ class Client(QObject):
         @self.sio.on("login_event")
         async def on_login():
             logging.debug("login_event")
-            self.login_completed.emit()
+            self.login_result.emit()
 
         @self.sio.on("login_info_event")
         async def on_login_info(data):
@@ -93,15 +109,17 @@ class Client(QObject):
             logger.debug("web socket server is not connected...")
             pass
         self.login_signal.emit()
-        self.login_completed.connect(callback)
+        if self._login_result_slot != callback:
+            self.login_result.connect(callback)
 
     def login_info(self, callback):
         logging.debug("")
         self.login_info_signal.emit()
-        self.login_info_result.connect(callback)
+        if self._login_info_result_slot != callback:
+            self.login_info_result.connect(callback)
 
     def account_info(self, callback, account_no, screen_no):
         logging.debug("")
         self.account_info_signal.emit({"account_no": account_no, "screen_no": screen_no})
-        self.account_info_result.connect(callback)
-
+        if self._account_info_result_slot != callback:
+            self.account_info_result.connect(callback)
