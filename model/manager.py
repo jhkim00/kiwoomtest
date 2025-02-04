@@ -19,7 +19,7 @@ class Manager(QObject):
         self.server.commConnect.connect(self.commConnect)
         self.server.getLoginInfo.connect(self.getLoginInfo)
         self.server.getAccountInfo.connect(self.getAccountInfo)
-        self.server.getStockCodeList.connect(self.getStockCodeList)
+        self.server.getStockList.connect(self.getStockList)
 
     @classmethod
     def getInstance(cls):
@@ -50,13 +50,17 @@ class Manager(QObject):
         self.kw.CommRqData(rqname="계좌평가현황요청", trcode="OPW00004", next=0, screen=data["screen_no"])
 
     @pyqtSlot()
-    def getStockCodeList(self):
+    def getStockList(self):
         logger.debug("")
         kospi = self.kw.GetCodeListByMarket("0")
         kosdaq = self.kw.GetCodeListByMarket("10")
-        logger.debug(f"kospi:{kospi}")
-        logger.debug(f"kosdaq:{kosdaq}")
-        self.server.notifyStockCodeList(kospi + kosdaq)
+        # logger.debug(f"kospi:{kospi}")
+        # logger.debug(f"kosdaq:{kosdaq}")
+        entire_stock_list = []
+        for code in (kospi + kosdaq):
+            name = self.kw.GetMasterCodeName(code)
+            entire_stock_list.append({'code': code, 'name': name})
+        self.server.notifyStockList(entire_stock_list)
 
     @pyqtSlot()
     def onLoginCompleted(self):

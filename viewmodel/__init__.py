@@ -1,4 +1,4 @@
 from .mainViewModel import MainViewModel
 from .accountViewModel import AccountViewModel
-from .accountStockInfoViewModel import AccountStockInfoViewModel
+from .accountStockInfoModel import AccountStockInfoModel
 from .marketViewModel import MarketViewModel

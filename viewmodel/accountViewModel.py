@@ -2,7 +2,7 @@ import logging
 
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtProperty, pyqtSignal, QVariant
 from client import Client
-from .accountStockInfoViewModel import AccountStockInfoViewModel
+from .accountStockInfoModel import AccountStockInfoModel
 
 logger = logging.getLogger()
 
@@ -20,7 +20,7 @@ class AccountViewModel(QObject):
         self._accountList = []
         self._currentAccount = ""
         self._currentAccountInfo = []
-        self._currentAccountStockInfo = AccountStockInfoViewModel()
+        self._currentAccountStockInfo = AccountStockInfoModel()
 
     @pyqtProperty(list, notify=accountListChanged)
     def accountList(self):
@@ -53,12 +53,12 @@ class AccountViewModel(QObject):
             self._currentAccountInfo = val
             self.currentAccountInfoChanged.emit()
 
-    @pyqtProperty(AccountStockInfoViewModel, notify=currentAccountStockInfoChanged)
+    @pyqtProperty(AccountStockInfoModel, notify=currentAccountStockInfoChanged)
     def currentAccountStockInfo(self):
         return self._currentAccountStockInfo
 
     @currentAccountStockInfo.setter
-    def currentAccountStockInfo(self, val: AccountStockInfoViewModel):
+    def currentAccountStockInfo(self, val: AccountStockInfoModel):
         if self._currentAccountStockInfo != val:
             logger.debug(f"currentAccountStockInfo changed: {val}")
             self._currentAccountStockInfo = val
@@ -106,4 +106,4 @@ class AccountViewModel(QObject):
         for i in range(len(result)):
             temp_list.append({key: result[i][key] for key in self.currentAccountStockInfoKeys if key in result[i]})
 
-        self.currentAccountStockInfo = AccountStockInfoViewModel(temp_list)
+        self.currentAccountStockInfo = AccountStockInfoModel(temp_list)

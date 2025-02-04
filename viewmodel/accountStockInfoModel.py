@@ -4,7 +4,7 @@ from PyQt5.QtCore import QAbstractListModel, Qt, QVariant
 
 logger = logging.getLogger()
 
-class AccountStockInfoViewModel(QAbstractListModel):
+class AccountStockInfoModel(QAbstractListModel):
     NameRole = Qt.UserRole + 1
     CurrentPriceRole = Qt.UserRole + 2
     BuyPriceRole = Qt.UserRole + 3

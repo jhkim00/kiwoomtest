@@ -2,11 +2,12 @@ import logging
 
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtProperty, pyqtSignal, QVariant
 from client import Client
+from .stockComboBoxModel import StockComboBoxModel
 
 logger = logging.getLogger()
 
 class MarketViewModel(QObject):
-    stockCodeListChanged = pyqtSignal()
+    stockComboBoxModelChanged = pyqtSignal()
 
     def __init__(self, qmlContext, parent=None):
         logger.debug("")
@@ -14,23 +15,24 @@ class MarketViewModel(QObject):
         self.qmlContext = qmlContext
         self.qmlContext.setContextProperty('marketViewModel', self)
 
-        self._stock_code_list = []
+        self._stockComboBoxModel = StockComboBoxModel()
 
-    @pyqtProperty(list, notify=stockCodeListChanged)
-    def stock_code_list(self):
-        return self._stock_code_list
+    @pyqtProperty(StockComboBoxModel, notify=stockComboBoxModelChanged)
+    def stockComboBoxModel(self):
+        return self._stockComboBoxModel
 
-    @stock_code_list.setter
-    def stock_code_list(self, val: list):
-        self._stock_code_list = val
-        self.stockCodeListChanged.emit()
+    @stockComboBoxModel.setter
+    def stockComboBoxModel(self, val: StockComboBoxModel):
+        self._stockComboBoxModel = val
+        self.stockComboBoxModelChanged.emit()
 
     @pyqtSlot()
     def load(self):
         logger.debug("")
-        Client.getInstance().stock_code_list(self.on_stock_code_list_result)
+        Client.getInstance().stock_list(self.on_stock_list_result)
 
     @pyqtSlot(list)
-    def on_stock_code_list_result(self, result):
-        logger.debug(f"result:{result}")
-        self.stock_code_list = result
+    def on_stock_list_result(self, result):
+        logger.debug("")
+        self.stockComboBoxModel = StockComboBoxModel(result)
+

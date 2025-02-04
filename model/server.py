@@ -13,7 +13,7 @@ class Server(QThread):
     commConnect = pyqtSignal()
     getLoginInfo = pyqtSignal()
     getAccountInfo = pyqtSignal(dict)
-    getStockCodeList = pyqtSignal()
+    getStockList = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -31,7 +31,7 @@ class Server(QThread):
         self.socketio.on_event("login", self.handle_login)
         self.socketio.on_event("login_info", self.handle_login_info)
         self.socketio.on_event("account_info", self.handle_account_info)
-        self.socketio.on_event("stock_code_list", self.handle_stock_code_list)
+        self.socketio.on_event("stock_list", self.handle_stock_list)
 
     @classmethod
     def getInstance(cls):
@@ -54,9 +54,9 @@ class Server(QThread):
         logger.debug("")
         self.socketio.emit("account_info_event", info)
 
-    def notifyStockCodeList(self, codeList):
+    def notifyStockList(self, stockList):
         logger.debug("")
-        self.socketio.emit("stock_code_list_event", codeList)
+        self.socketio.emit("stock_list_event", stockList)
 
     """
     web socket event handler
@@ -89,6 +89,6 @@ class Server(QThread):
         logger.debug(data)
         self.getAccountInfo.emit(data)
 
-    def handle_stock_code_list(self):
+    def handle_stock_list(self):
         logger.debug("")
-        self.getStockCodeList.emit()
+        self.getStockList.emit()

@@ -69,7 +69,12 @@ ApplicationWindow {
             enabled: mainViewModel.login_completed
             onBtnClicked: {
                 console.log('btnOpenCurrentPrice clicked')
-                marketViewModel.load()
+
+                var component = Qt.createComponent("Market.qml");
+                if (component.status === Component.Ready) {
+                    var newWindow = component.createObject(root);
+                    newWindow.show();
+                }
             }
         }
     }
