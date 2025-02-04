@@ -10,7 +10,7 @@ from qasync import QEventLoop, asyncSlot
 
 from model import Server, Manager
 from client import Client
-from viewmodel import MainViewModel
+from viewmodel import MainViewModel, AccountViewModel
 
 logger = logging.getLogger()
 
@@ -49,6 +49,7 @@ if __name__ == "__main__":
     engine.warnings.connect(_handleQmlWarnings)
 
     mainViewModel = MainViewModel(engine.rootContext(), app)
+    accountViewModel = AccountViewModel(engine.rootContext(), app)
 
     engine.load(QUrl.fromLocalFile("qml/Main.qml"))
 

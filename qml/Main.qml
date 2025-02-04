@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import "./component"
 
 ApplicationWindow {
+    id: root
     visible: true
     width: 240
     height: 480
@@ -40,7 +41,12 @@ ApplicationWindow {
             enabled: mainViewModel.login_completed
             onBtnClicked: {
                 console.log('btnOpenAccountInfo clicked')
-                mainViewModel.login_info()
+
+                var component = Qt.createComponent("Account.qml");
+                if (component.status === Component.Ready) {
+                    var newWindow = component.createObject(root);
+                    newWindow.show();
+                }
             }
         }
 
@@ -56,7 +62,7 @@ ApplicationWindow {
             enabled: mainViewModel.login_completed
             onBtnClicked: {
                 console.log('btnOpenCurrentPrice clicked')
-                mainViewModel.account_info()
+                accountViewModel.account_info()
             }
         }
     }

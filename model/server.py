@@ -48,6 +48,10 @@ class Server(QThread):
         logger.debug("")
         self.socketio.emit("login_info_event", info)
 
+    def notifyAccountInfo(self, info):
+        logger.debug("")
+        self.socketio.emit("account_info_event", info)
+
     """
     web socket event handler
     """

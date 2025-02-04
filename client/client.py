@@ -24,7 +24,7 @@ class Client(QObject):
     """
     login_result = pyqtSignal()
     login_info_result = pyqtSignal(list)
-    account_info_result = pyqtSignal(dict)
+    account_info_result = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
@@ -60,6 +60,11 @@ class Client(QObject):
         async def on_login_info(data):
             logging.debug(f"login_info_event data:{data}")
             self.login_info_result.emit(data)
+
+        @self.sio.on("account_info_event")
+        async def on_account_info(data):
+            logging.debug(f"account_info_event data:{data}")
+            self.account_info_result.emit(data)
 
     @classmethod
     def getInstance(cls):

@@ -58,13 +58,19 @@ class Manager(QObject):
         if rqname == "계좌평가현황요청":
             cnt = self.kw.GetRepeatCnt(trcode, rqname)
             logger.debug(f"cnt:{cnt}")
+            outList = []
             for i in range(cnt):
+                outDict = {}
                 outKeys = ['계좌명', '예수금', 'D+2추정예수금', '유가잔고평가액', '예탁자산평가액', '총매입금액', '추정예탁자산']
                 outKeys2 = ['종목코드', '종목명', '보유수량', '평균단가', '현재가', '평가금액', '손익금액', '손익율']
                 for key in outKeys:
                     strData = self.kw.GetCommData(trcode, rqname, i, key)
                     logger.debug(f"{key}:{strData}")
-
+                    outDict[key] = strData
                 for key in outKeys2:
                     strData = self.kw.GetCommData(trcode, rqname, i, key)
                     logger.debug(f"{key}:{strData}")
+                    outDict[key] = strData
+                outList.append(outDict)
+
+            self.server.notifyAccountInfo(outList)
