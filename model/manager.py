@@ -19,6 +19,7 @@ class Manager(QObject):
         self.server.commConnect.connect(self.commConnect)
         self.server.getLoginInfo.connect(self.getLoginInfo)
         self.server.getAccountInfo.connect(self.getAccountInfo)
+        self.server.getStockCodeList.connect(self.getStockCodeList)
 
     @classmethod
     def getInstance(cls):
@@ -47,6 +48,15 @@ class Manager(QObject):
         self.kw.SetInputValue(id="상장폐지조회구분", value="0")
         self.kw.SetInputValue(id="비밀번호입력매체구분", value="00")
         self.kw.CommRqData(rqname="계좌평가현황요청", trcode="OPW00004", next=0, screen=data["screen_no"])
+
+    @pyqtSlot()
+    def getStockCodeList(self):
+        logger.debug("")
+        kospi = self.kw.GetCodeListByMarket("0")
+        kosdaq = self.kw.GetCodeListByMarket("10")
+        logger.debug(f"kospi:{kospi}")
+        logger.debug(f"kosdaq:{kosdaq}")
+        self.server.notifyStockCodeList(kospi + kosdaq)
 
     @pyqtSlot()
     def onLoginCompleted(self):

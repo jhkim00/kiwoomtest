@@ -22,12 +22,12 @@ class AccountViewModel(QObject):
         self._currentAccountInfo = []
         self._currentAccountStockInfo = AccountStockInfoViewModel()
 
-    @pyqtProperty(QVariant, notify=accountListChanged)
+    @pyqtProperty(list, notify=accountListChanged)
     def accountList(self):
         return self._accountList
 
     @accountList.setter
-    def accountList(self, val: QVariant):
+    def accountList(self, val: list):
         self._accountList = val
         self.accountListChanged.emit()
 
@@ -97,8 +97,6 @@ class AccountViewModel(QObject):
     @pyqtSlot(list)
     def on_account_info_result(self, result):
         logger.debug(f"typeof result len:{len(result)}")
-        # for i in range(len(result)):
-        #     logger.debug(f"data {i}:{result[i]}")
 
         if len(result) > 0:
             self.currentAccountInfo = [[key, result[0][key]] for key in self.currentAccountInfoKeys if key in result[0]]
@@ -109,4 +107,3 @@ class AccountViewModel(QObject):
             temp_list.append({key: result[i][key] for key in self.currentAccountStockInfoKeys if key in result[i]})
 
         self.currentAccountStockInfo = AccountStockInfoViewModel(temp_list)
-        # logger.debug(f"self.currentAccountStockInfo:{self.currentAccountStockInfo}")

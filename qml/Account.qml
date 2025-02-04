@@ -6,6 +6,8 @@ import "./component"
 
 ApplicationWindow {
     visible: true
+    x: 0
+    y: 0
     width: fixedWidth
     height: fixedHeight
     minimumWidth: fixedWidth
@@ -62,7 +64,7 @@ ApplicationWindow {
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: parent.width - 1
-                height: 48
+                height: 24
                 border.width: 1
                 Text {
                     text: modelData[1]

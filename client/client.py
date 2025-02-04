@@ -18,6 +18,7 @@ class Client(QObject):
     login_signal = pyqtSignal()
     login_info_signal = pyqtSignal()
     account_info_signal = pyqtSignal(dict)
+    stock_code_list_signal = pyqtSignal()
 
     """
     signals for event callback
@@ -25,6 +26,7 @@ class Client(QObject):
     login_result = pyqtSignal()
     login_info_result = pyqtSignal(list)
     account_info_result = pyqtSignal(list)
+    stock_code_list_result = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
@@ -39,6 +41,7 @@ class Client(QObject):
         self.login_signal.connect(self.login_async)
         self.login_info_signal.connect(self.login_info_async)
         self.account_info_signal.connect(self.account_info_async)
+        self.stock_code_list_signal.connect(self.stock_code_list_async)
 
         """
         slots for callback
@@ -46,6 +49,7 @@ class Client(QObject):
         self._login_result_slot = None
         self._login_info_result_slot = None
         self._account_info_result_slot = None
+        self._stock_code_list_result_slot = None
 
         @self.sio.on("message")
         async def on_message(data):
@@ -65,6 +69,11 @@ class Client(QObject):
         async def on_account_info(data):
             logging.debug(f"account_info_event data:{data}")
             self.account_info_result.emit(data)
+
+        @self.sio.on("stock_code_list_event")
+        async def on_stock_code_list(data):
+            logging.debug(f"stock_code_list_event data:{data}")
+            self.stock_code_list_result.emit(data)
 
     @classmethod
     def getInstance(cls):
@@ -105,6 +114,11 @@ class Client(QObject):
         logging.debug("")
         await self.sio.emit("account_info", data)
 
+    @asyncSlot()
+    async def stock_code_list_async(self):
+        logging.debug("")
+        await self.sio.emit("stock_code_list")
+
     """
     public method
     """
@@ -128,3 +142,9 @@ class Client(QObject):
         self.account_info_signal.emit({"account_no": account_no, "screen_no": screen_no})
         if self._account_info_result_slot != callback:
             self.account_info_result.connect(callback)
+
+    def stock_code_list(self, callback):
+        logging.debug("")
+        self.stock_code_list_signal.emit()
+        if self._stock_code_list_result_slot != callback:
+            self.stock_code_list_result.connect(callback)

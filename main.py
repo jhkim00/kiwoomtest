@@ -10,7 +10,7 @@ from qasync import QEventLoop, asyncSlot
 
 from model import Server, Manager
 from client import Client
-from viewmodel import MainViewModel, AccountViewModel
+from viewmodel import MainViewModel, AccountViewModel, MarketViewModel
 
 logger = logging.getLogger()
 
@@ -50,6 +50,7 @@ if __name__ == "__main__":
 
     mainViewModel = MainViewModel(engine.rootContext(), app)
     accountViewModel = AccountViewModel(engine.rootContext(), app)
+    marketViewModel = MarketViewModel(engine.rootContext(), app)
 
     engine.load(QUrl.fromLocalFile("qml/Main.qml"))
 

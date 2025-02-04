@@ -5,9 +5,16 @@ import "./component"
 ApplicationWindow {
     id: root
     visible: true
-    width: 240
-    height: 480
+    width: fixedWidth
+    height: fixedHeight
+    minimumWidth: fixedWidth
+    maximumWidth: fixedWidth
+    minimumHeight: fixedHeight
+    maximumHeight: fixedHeight
     title: "kiwoomtest"
+
+    property var fixedWidth: 240
+    property var fixedHeight: 480
 
     Column {
         width: parent.width
@@ -62,7 +69,7 @@ ApplicationWindow {
             enabled: mainViewModel.login_completed
             onBtnClicked: {
                 console.log('btnOpenCurrentPrice clicked')
-                accountViewModel.account_info()
+                marketViewModel.load()
             }
         }
     }

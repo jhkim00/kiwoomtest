@@ -1,6 +1,7 @@
 import logging
 
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtProperty, pyqtSignal, QVariant
+
 from client import Client
 
 logger = logging.getLogger()
