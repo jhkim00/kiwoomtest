@@ -28,9 +28,31 @@ ApplicationWindow {
         y: 10
         model: marketViewModel.stockComboBoxModel
         textRole: "display"
+    }
 
-        /*onCurrentTextChanged: {
-            console.log("market combobox onCurrentTextChanged")
-        }*/
+    StockInputField {
+        id: stockInputField
+        y: 50
+        width: 200
+        height: 40
+
+        stockListView: _stockListView
+
+        onReturnPressed: {
+            console.log("stockInputField onReturnPressed")
+            var stock = stockListView.getCurrentStock()
+            if (typeof(stock) !== 'undefined') {
+                marketViewModel.setCurrentStock(stock)
+            }
+        }
+    }
+
+    StockListView {
+        id: _stockListView
+        anchors.top: stockInputField.bottom
+        anchors.topMargin: 2
+        width: 200
+        height: 200
+        model: marketViewModel.stockList
     }
 }
