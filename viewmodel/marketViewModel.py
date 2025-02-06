@@ -8,8 +8,8 @@ from .stockComboBoxModel import StockComboBoxModel
 logger = logging.getLogger()
 
 class MarketViewModel(QObject):
-    stockComboBoxModelChanged = pyqtSignal()
     stockListChanged = pyqtSignal()
+    searchedStockListChanged = pyqtSignal()
     currentStockChanged = pyqtSignal()
 
     def __init__(self, qmlContext, parent=None):
@@ -18,18 +18,9 @@ class MarketViewModel(QObject):
         self.qmlContext = qmlContext
         self.qmlContext.setContextProperty('marketViewModel', self)
 
-        self._stockComboBoxModel = StockComboBoxModel()
         self._stockList = []
+        self._searchedStockList = []
         self._currentStock = None
-
-    @pyqtProperty(StockComboBoxModel, notify=stockComboBoxModelChanged)
-    def stockComboBoxModel(self):
-        return self._stockComboBoxModel
-
-    @stockComboBoxModel.setter
-    def stockComboBoxModel(self, val: StockComboBoxModel):
-        self._stockComboBoxModel = val
-        self.stockComboBoxModelChanged.emit()
 
     @pyqtProperty(list, notify=stockListChanged)
     def stockList(self):
@@ -40,7 +31,16 @@ class MarketViewModel(QObject):
         self._stockList = val
         self.stockListChanged.emit()
 
-    @pyqtProperty(dict, notify=currentStockChanged)
+    @pyqtProperty(list, notify=searchedStockListChanged)
+    def searchedStockList(self):
+        return self._searchedStockList
+
+    @searchedStockList.setter
+    def searchedStockList(self, val: list):
+        self._searchedStockList = val
+        self.searchedStockListChanged.emit()
+
+    @pyqtProperty(QVariant, notify=currentStockChanged)
     def currentStock(self):
         return self._currentStock
 
@@ -51,6 +51,9 @@ class MarketViewModel(QObject):
             self._currentStock = val
             self.currentStockChanged.emit()
 
+    """
+    method for qml side
+    """
     @pyqtSlot()
     def load(self):
         logger.debug("")
@@ -63,10 +66,24 @@ class MarketViewModel(QObject):
         elif isinstance(val, QJSValue):
             self.currentStock = val.toVariant()
 
+    @pyqtSlot(str)
+    def setInputText(self, inputText):
+        logger.debug(inputText)
+
+        if len(inputText) == 0 or inputText == ' ':
+            self.searchedStockList = []
+        else:
+            self.searchedStockList = list(map(lambda x: x,
+                                              list(filter(lambda x: x["name"].lower().find(inputText.lower()) != -1
+                                                                    or x["code"].lower().find(inputText.lower()) != -1,
+                                                          self.stockList))))
+
+    """
+    client model event
+    """
     @pyqtSlot(list)
     def on_stock_list_result(self, result):
         logger.debug("")
-        self.stockComboBoxModel = StockComboBoxModel(result)
         self.stockList = result
         if len(result) > 0:
             self.currentStock = self.stockList[0]

@@ -47,12 +47,6 @@ TextField {
         }
         root.returnPressed()
     }
-    onDisplayTextChanged: {
-        console.log('onDisplayTextChanged ' + displayText)
-        /*****
-        mainController.onInputTextChanged(displayText)
-        ****/
-    }
 
     TextButton {
         width: 30

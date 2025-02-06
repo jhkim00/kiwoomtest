@@ -22,17 +22,9 @@ ApplicationWindow {
         marketViewModel.load()
     }
 
-    ComboBox {
-        id: comboBox
-        width: 200
-        y: 10
-        model: marketViewModel.stockComboBoxModel
-        textRole: "display"
-    }
-
     StockInputField {
         id: stockInputField
-        y: 50
+        y: 10
         width: 200
         height: 40
 
@@ -45,6 +37,11 @@ ApplicationWindow {
                 marketViewModel.setCurrentStock(stock)
             }
         }
+
+        onDisplayTextChanged: {
+            console.log('stockInputField onDisplayTextChanged ' + displayText)
+            marketViewModel.setInputText(displayText)
+        }
     }
 
     StockListView {
@@ -53,6 +50,6 @@ ApplicationWindow {
         anchors.topMargin: 2
         width: 200
         height: 200
-        model: marketViewModel.stockList
+        model: marketViewModel.searchedStockList
     }
 }
