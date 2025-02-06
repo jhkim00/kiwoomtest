@@ -55,6 +55,11 @@ class MarketViewModel(QObject):
     method for qml side
     """
     @pyqtSlot()
+    def test(self):
+        logger.debug("")
+        Client.getInstance().stock_basic_info(self.on_test_result, self.currentStock["code"], "1002")
+
+    @pyqtSlot()
     def load(self):
         logger.debug("")
         Client.getInstance().stock_list(self.on_stock_list_result)
@@ -81,6 +86,10 @@ class MarketViewModel(QObject):
     """
     client model event
     """
+    @pyqtSlot(list)
+    def on_test_result(self, result):
+        logger.debug(f"result:{result}")
+
     @pyqtSlot(list)
     def on_stock_list_result(self, result):
         logger.debug("")

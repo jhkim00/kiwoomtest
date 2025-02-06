@@ -52,4 +52,19 @@ ApplicationWindow {
         height: 200
         model: marketViewModel.searchedStockList
     }
+
+    TextButton {
+        id: btnTest
+        anchors.right: parent.right
+        width: 200
+        height: 30
+        text: "test"
+        textSize: 20
+        normalColor: 'lightsteelblue'
+        radius: 4
+        onBtnClicked: {
+            console.log('btnTest clicked')
+            marketViewModel.test()
+        }
+    }
 }
