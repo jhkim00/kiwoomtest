@@ -86,7 +86,7 @@ class MarketViewModel(QObject):
     """
     client model event
     """
-    @pyqtSlot(list)
+    @pyqtSlot(tuple)
     def on_test_result(self, result):
         logger.debug(f"result:{result}")
 

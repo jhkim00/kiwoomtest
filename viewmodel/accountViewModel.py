@@ -94,16 +94,16 @@ class AccountViewModel(QObject):
         logger.debug(f"result:{result}")
         self.accountList = result
 
-    @pyqtSlot(list)
+    @pyqtSlot(tuple)
     def on_account_info_result(self, result):
-        logger.debug(f"typeof result len:{len(result)}")
+        logger.debug("")
 
         if len(result) > 0:
             self.currentAccountInfo = [[key, result[0][key]] for key in self.currentAccountInfoKeys if key in result[0]]
             logger.debug(self.currentAccountInfo)
 
         temp_list = []
-        for i in range(len(result)):
-            temp_list.append({key: result[i][key] for key in self.currentAccountStockInfoKeys if key in result[i]})
+        for i in range(len(result[1])):
+            temp_list.append({key: result[1][i][key] for key in self.currentAccountStockInfoKeys if key in result[1][i]})
 
         self.currentAccountStockInfo = AccountStockInfoModel(temp_list)

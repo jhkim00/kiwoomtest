@@ -84,31 +84,42 @@ class Manager(QObject):
     def __onAccountInfo(self, screen, rqname, trcode, record, next):
         logger.debug("")
         if rqname == "계좌평가현황요청":
-            outKeys = ['계좌명', '예수금', 'D+2추정예수금', '유가잔고평가액', '예탁자산평가액', '총매입금액', '추정예탁자산']
-            outKeys2 = ['종목코드', '종목명', '보유수량', '평균단가', '현재가', '평가금액', '손익금액', '손익율']
-            outList = self.__getCommDataByKeys(trcode, rqname, outKeys + outKeys2)
-            self.server.notifyAccountInfo(outList)
+            single_data_keys = ['계좌명', '예수금', 'D+2추정예수금', '유가잔고평가액', '예탁자산평가액', '총매입금액', '추정예탁자산']
+            multi_data_keys = ['종목코드', '종목명', '보유수량', '평균단가', '현재가', '평가금액', '손익금액', '손익율']
+            self.server.notifyAccountInfo(
+                self.__getCommDataByKeys(trcode, rqname, single_data_keys, multi_data_keys)
+            )
 
     def __onStockBasicInfo(self, screen, rqname, trcode, record, next):
         logger.debug("")
         if rqname == "주식기본정보":
-            outKeys = ['신용비율', '시가총액', 'PER', 'PBR', '매출액', '영업이익', '당기순이익', '유통주식', '유통비율']
-            outKeys2 = ['시가', '고가', '저가', '현재가', '기준가', '대비기호', '전일대비', '등락율', '거래량', '거래대비']
-            outList = self.__getCommDataByKeys(trcode, rqname, outKeys + outKeys2)
+            single_data_keys = ['신용비율', '시가총액', 'PER', 'PBR', '매출액', '영업이익', '당기순이익', '유통주식', '유통비율',
+                '시가', '고가', '저가', '현재가', '기준가', '대비기호', '전일대비', '등락율', '거래량', '거래대비']
+            outList = self.__getCommDataByKeys(trcode, rqname, single_data_keys)
             self.server.notifyStockBasicInfo(outList)
 
     """
     private method
     """
-    def __getCommDataByKeys(self, trcode, rqname, keys):
+    def __getCommDataByKeys(self, trcode, rqname, single_data_keys, multi_data_keys=[]):
+        logger.debug("")
         cnt = self.kw.GetRepeatCnt(trcode, rqname)
         logger.debug(f"cnt:{cnt}")
-        outList = []
-        for i in range(cnt):
-            outDict = {}
-            for key in keys:
-                strData = self.kw.GetCommData(trcode, rqname, i, key)
-                logger.debug(f"{key}:{strData}")
-                outDict[key] = strData
-            outList.append(outDict)
-        return outList
+        single_data = {}
+        multi_data = []
+        for key in single_data_keys:
+            strData = self.kw.GetCommData(trcode, rqname, 0, key)
+            logger.debug(f"{key}:{strData}")
+            single_data[key] = strData
+
+        if len(multi_data_keys) > 0:
+            cnt = self.kw.GetRepeatCnt(trcode, rqname)
+            logger.debug(f"repeat_cnt:{cnt}, len(multi_data_keys):{len(multi_data_keys)}")
+            for i in range(cnt):
+                outDict = {}
+                for key in multi_data_keys:
+                    strData = self.kw.GetCommData(trcode, rqname, i, key)
+                    logger.debug(f"{key}:{strData}")
+                    outDict[key] = strData
+                multi_data.append(outDict)
+        return single_data, multi_data

@@ -26,9 +26,9 @@ class Client(QObject):
     """
     login_result = pyqtSignal()
     login_info_result = pyqtSignal(list)
-    account_info_result = pyqtSignal(list)
+    account_info_result = pyqtSignal(tuple)
     stock_list_result = pyqtSignal(list)
-    stock_basic_info_result = pyqtSignal(list)
+    stock_basic_info_result = pyqtSignal(tuple)
 
     def __init__(self):
         super().__init__()
@@ -70,17 +70,18 @@ class Client(QObject):
             self.login_info_result.emit(data)
 
         @self.sio.on("account_info_event")
-        async def on_account_info(data):
+        async def on_account_info(*data):
             logging.debug(f"account_info_event data:{data}")
             self.account_info_result.emit(data)
 
         @self.sio.on("stock_list_event")
         async def on_stock_list(data):
+            logging.debug("")
             # logging.debug(f"stock_list_event data:{data}")
             self.stock_list_result.emit(data)
 
         @self.sio.on("stock_basic_info_event")
-        async def on_stock_basic_info(data):
+        async def on_stock_basic_info(*data):
             logging.debug(f"stock_basic_info_event data:{data}")
             self.stock_basic_info_result.emit(data)
 
